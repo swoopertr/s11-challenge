@@ -12,7 +12,7 @@ export default function Articles(props) {
 
   useEffect(() => {
     getArticles()
-    setSpinnerOn(false)
+   
   }, [])
 
   return (

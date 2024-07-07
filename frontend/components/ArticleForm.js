@@ -22,7 +22,7 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
     } else {
       setValues(initialFormValues)
     }
-  }, [currentArticle])
+  }, [])
 
   const onChange = evt => {
     const { id, value } = evt.target
@@ -35,7 +35,7 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
     if (currentArticle) {
       updateArticle({ article_id: currentArticle.article_id, article: values })
     } else {
-      postArticle(values); 
+    postArticle(values);
     }
   }
 

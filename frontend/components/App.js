@@ -36,6 +36,7 @@ export default function App() {
     setSpinnerOn(true)
     try {
       const result = await loginBusiness.login(username, password)
+      setSpinnerOn(false)
       if (result) {
         setMessage('Login successful')
         redirectToArticles()
@@ -45,7 +46,7 @@ export default function App() {
     } catch (error) {
       setMessage('Login failed')
     }
-    setSpinnerOn(false)
+   
   }
 
   const getArticles = async () => {
@@ -55,6 +56,7 @@ export default function App() {
     try {
       const token = localStorage.getItem('token');
       const articles = await articleBusiness.getArticles(token);
+      setSpinnerOn(false)
       if (articles) {
         setArticles(articles);
         setMessage('Articles fetched successfully');
@@ -67,8 +69,6 @@ export default function App() {
       setMessage('Failed to fetch articles');
       redirectToLogin();
     } 
-
-   
   }
 
   const postArticle = async (article) => {
@@ -79,11 +79,8 @@ export default function App() {
       const token = localStorage.getItem('token')
       const result = await articleBusiness.postArticles(token, article.title, article.text, article.topic)
       if (result) {
-        setArticles(prevArticles => [...prevArticles, result.data.article])
         setMessage('Article posted successfully')
-        console.log("redericting")
-        redirectToArticles()
-        console.log("redericted")
+       await getArticles()
       } else {
         setMessage('Failed to post article')
       }
