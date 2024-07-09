@@ -22,7 +22,14 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
     } else {
       setValues(initialFormValues)
     }
-  }, [])
+  }, [currentArticle])
+
+const CancelSubmit = e =>{
+  e.preventDefault()
+  setValues(initialFormValues)
+}
+
+
 
   const onChange = evt => {
     const { id, value } = evt.target
@@ -48,7 +55,7 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
     // ✨ JSX'i düzenleyin: başlığın "Düzenle" ya da "Oluştur" olarak görüntülenmesini sağlayın
     // ve Function.prototype'ı uygun fonksiyonla değiştirin
     <form id="form" onSubmit={onSubmit}>
-      <h2>{currentArticle ? "Düzenle" : "Yeni Makale Oluştur"}</h2>
+      <h2>{setCurrentArticleId ? "Düzenle" : "Yeni Makale Oluştur"}</h2>
       <input
         maxLength={50}
         onChange={onChange}
@@ -71,7 +78,7 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
       </select>
       <div className="button-group">
         <button disabled={isDisabled()} type="submit" id="submitArticle">Gönder</button>
-        <button onClick={() => setCurrentArticleId(null)}>Düzenlemeyi iptal et</button>
+        <button onClick={CancelSubmit}>Düzenlemeyi iptal et</button>
       </div>
     </form>
   )

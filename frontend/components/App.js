@@ -16,6 +16,7 @@ export default function App() {
   const [message, setMessage] = useState('')
   const [articles, setArticles] = useState([])
   const [currentArticleId, setCurrentArticleId] = useState()
+  const [currentArticle, setCurrentArticle] = useState(null)
   const [spinnerOn, setSpinnerOn] = useState(false)
 
   // ✨ `useNavigate` 'i araştırın React Router v.6
@@ -128,6 +129,15 @@ export default function App() {
     setSpinnerOn(false)
   }
 
+  const selectArticle = async (article_id) => {
+    setCurrentArticleId(article_id)
+    const article = articles.find(art => art.article_id === article_id)
+    setCurrentArticle(article)
+  }
+
+
+
+
   return (
     // ✨ JSX'i düzenleyin: `Spinner`, `Message`, `LoginForm`, `ArticleForm` ve `Articles` gerekli proplarla beraber ❗
     <>
@@ -144,8 +154,8 @@ export default function App() {
           <Route path="/" element={<LoginForm login={login} />} />
           <Route path="articles" element={
             <>
-              <ArticleForm postArticle={postArticle} updateArticle={updateArticle} setCurrentArticleId={setCurrentArticleId} setSpinnerOn={setSpinnerOn} spinnerOn={spinnerOn} message={message} />
-              <Articles articles={articles} getArticles={getArticles} deleteArticle={deleteArticle} setCurrentArticleId={setCurrentArticleId} setSpinnerOn={setSpinnerOn} setMessage={setMessage} spinnerOn={spinnerOn} message={message}/>
+              <ArticleForm postArticle={postArticle} updateArticle={updateArticle} currentArticle={currentArticle} setCurrentArticleId={setCurrentArticleId} setSpinnerOn={setSpinnerOn} spinnerOn={spinnerOn} message={message} />
+              <Articles articles={articles} getArticles={getArticles} deleteArticle={deleteArticle} setCurrentArticleId={selectArticle} setSpinnerOn={setSpinnerOn} setMessage={setMessage} spinnerOn={spinnerOn} message={message}/>
             </>
           } />
         </Routes>
