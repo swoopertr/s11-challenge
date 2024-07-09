@@ -7,20 +7,22 @@ import ArticleForm from './ArticleForm'
 import Spinner from './Spinner'
 import { loginBusiness } from '../businesssLayer/loginBusiness'
 import { articleBusiness } from '../businesssLayer/articleBusiness'
-
+import { useSelector, useDispatch } from 'react-redux';
+import { MetaActionFn } from '../reduxThings/actions'
 
 const articlesUrl = 'http://localhost:9000/api/articles'
 const loginUrl = 'http://localhost:9000/api/login'
 
 export default function App() {
   // ✨ Bu statelerle MVP'ye ulaşılabilir
-  const [message, setMessage] = useState('')
-  const [articles, setArticles] = useState([])
-  const [currentArticleId, setCurrentArticleId] = useState()
-  const [spinnerOn, setSpinnerOn] = useState(false)
+  const dispatch = useDispatch();
+
+const { message, articles, currentArticleId, spinnerOn, token } = useSelector(state => state);  
+
 
   // ✨ `useNavigate` 'i araştırın React Router v.6
   const navigate = useNavigate()
+  const redirectToLogin = () => { navigate('/') };
 
   useEffect(() => {
     if (loginBusiness.checkLogin()) {
@@ -31,16 +33,11 @@ export default function App() {
   }, [])
 
   const logout = () => {
-    // ✨ ekleyin
-    // Eğer token local storage da kayıtlıysa silinmelidir,
-    // ve state'ine "Güle güle!" mesajı eklenmelidir.
-    // Herhangi bir case'de, tarayıcıyı login ekranına yönlendirin
-    const isLoggedOut = loginBusiness.logout();
-    if (isLoggedOut) {
-      setMessage("Güle güle!");
-      navigate("/");
-    }
-  }
+    localStorage.removeItem('token');
+    dispatch(MetaActionFn.setToken(null));
+    dispatch(MetaActionFn.setMessage('Güle güle!'));
+    redirectToLogin();
+  };
 
   const login = async ({ username, password }) => {
 
