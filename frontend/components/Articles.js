@@ -12,7 +12,7 @@ export default function Articles({ articles, getArticles, deleteArticle, setCurr
 
   useEffect(() => {
     getArticles()
-  }, [getArticles])
+  }, [])
 
   return (
     <div className="articles">
