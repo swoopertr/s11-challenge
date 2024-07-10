@@ -17,7 +17,7 @@ export default function App() {
   // ✨ Bu statelerle MVP'ye ulaşılabilir
   const dispatch = useDispatch();
 
-const { message, articles, currentArticleId, spinnerOn, token } = useSelector(state => state);  
+const { message, articles, currentArticleId, spinnerOn, token } = useSelector(store => store);  
 
 
   // ✨ `useNavigate` 'i araştırın React Router v.6
@@ -33,10 +33,13 @@ const { message, articles, currentArticleId, spinnerOn, token } = useSelector(st
   }, [])
 
   const logout = () => {
-    localStorage.removeItem('token');
-    dispatch(MetaActionFn.setToken(null));
-    dispatch(MetaActionFn.setMessage('Güle güle!'));
-    redirectToLogin();
+    const checkLogout = loginBusiness.logout()
+    if (checkLogout) {
+      dispatch(MetaActionFn.setToken(null));
+      dispatch(MetaActionFn.setMessage('Güle güle!'));
+      redirectToLogin();
+    }
+    
   };
 
   const login = async ({ username, password }) => {
@@ -47,11 +50,17 @@ const { message, articles, currentArticleId, spinnerOn, token } = useSelector(st
     // Başarılı olması durumunda local storage'a `token` ı kaydedin
     // başarılı mesajını state'e atayın
     // ve makaleler sayfasına yönlendirin. Spinnerı kapatmayı unutmayın!
-    setMessage("");
-    setSpinnerOn(true);
+    //setMessage("");
+    dispatch(MetaActionFn.setMessage(""));
+    dispatch(MetaActionFn.setSpinnerOn(true))
+    //setSpinnerOn(true);
+
     let loginMessage = await loginBusiness.login(username, password);
-    setMessage(loginMessage);
-    setSpinnerOn(false);
+
+    //setMessage(loginMessage);
+    dispatch(MetaActionFn.setMessage(loginMessage));
+    dispatch(MetaActionFn.setSpinnerOn(false))
+    //setSpinnerOn(false);
     if (loginBusiness.checkLogin()) {
       console.log("login token var")
       navigate("/articles")
@@ -68,22 +77,25 @@ const { message, articles, currentArticleId, spinnerOn, token } = useSelector(st
     // eğer 401'se token da bir sıkıntı olabilir ve tekrar login sayfasına yönlendirmeliyiz
     // Spinner'ı kapatmayı unutmayın!
     if (loginBusiness.checkLogin()) {
-      setMessage("");
-      setSpinnerOn(true)
+      dispatch(MetaActionFn.setMessage(""));
+      dispatch(MetaActionFn.setSpinnerOn(true))
       let articleRequest = await articleBusiness.getArticles();
-      setSpinnerOn(false);
+      dispatch(MetaActionFn.setSpinnerOn(false))
       if (articleRequest.status == 200) {
-        setMessage(articleRequest.data.message);
-        setArticles(articleRequest.data.articles);
+        //setMessage(articleRequest.data.message);
+        dispatch(MetaActionFn.setMessage(articleRequest.data.message));
+        dispatch(MetaActionFn.setArticles(articleRequest.data.articles))
+        //setArticles(articleRequest.data.articles);
       } else {
-        setMessage(articleRequest.data.message)
+        dispatch(MetaActionFn.setMessage(articleRequest.data.message));
         if (articleRequest.status.toString().startsWith("4")) {
           loginBusiness.logout()
           navigate("/")
         }
       }
     } else {
-      setMessage("Oturum açmanız gerekir")
+      dispatch(MetaActionFn.setMessage("Oturum açmanız gerekir"));
+      //setMessage("Oturum açmanız gerekir")
       navigate("/")
     }
 
@@ -94,17 +106,18 @@ const { message, articles, currentArticleId, spinnerOn, token } = useSelector(st
     // ✨ ekleyin
     // Akış, "getArticles" işlevine çok benzer.
     // Ne yapacağınızı biliyorsunuz, log kullanabilirsiniz ya da breakpointler
-    setSpinnerOn(true);
+    dispatch(MetaActionFn.setSpinnerOn(true))
     const postRequest = await articleBusiness.postArticle(article);
-    setSpinnerOn(false)
+    dispatch(MetaActionFn.setSpinnerOn(false))
     if(postRequest.status == 201) {
       
       await getArticles()
       
-      setMessage(postRequest.data.message)
+      //setMessage(postRequest.data.message)
+      dispatch(MetaActionFn.setMessage(postRequest.data.message));
       
     } else {
-      setMessage(postRequest.data.message)
+      dispatch(MetaActionFn.setMessage(postRequest.data.message));
     }
    
     
@@ -113,16 +126,17 @@ const { message, articles, currentArticleId, spinnerOn, token } = useSelector(st
   const updateArticle = async (article_id, article) => {
     // ✨ ekleyin
     // Bunu biliyorsunuz!
-    setSpinnerOn(true);
+    dispatch(MetaActionFn.setSpinnerOn(true))
     const updateArticleRequest = await articleBusiness.updateArticle(article_id, article);
-    setSpinnerOn(false);
+    dispatch(MetaActionFn.setSpinnerOn(false))
     if (updateArticleRequest.status == 200) {
      
       await getArticles()
  
-      setMessage(updateArticleRequest.data.message)
+      //setMessage(updateArticleRequest.data.message)
+      dispatch(MetaActionFn.setMessage(updateArticleRequest.data.message));
     } else {
-      setMessage(updateArticleRequest.data.message)
+      dispatch(MetaActionFn.setMessage(updateArticleRequest.data.message));
     }
     
     
@@ -134,9 +148,10 @@ const { message, articles, currentArticleId, spinnerOn, token } = useSelector(st
   
     if(deleteArticleRequest.status == 200) {
       await getArticles();
-      setMessage(deleteArticleRequest.data.message)
+      //setMessage(deleteArticleRequest.data.message)
+      dispatch(MetaActionFn.setMessage(deleteArticleRequest.data.message));
     } else {
-      setMessage(deleteArticleRequest.data.message)
+      dispatch(MetaActionFn.setMessage(deleteArticleRequest.data.message));
     }
     
   }
@@ -144,8 +159,8 @@ const { message, articles, currentArticleId, spinnerOn, token } = useSelector(st
   return (
     // ✨ JSX'i düzenleyin: `Spinner`, `Message`, `LoginForm`, `ArticleForm` ve `Articles` gerekli proplarla beraber ❗
     <>
-      <Spinner on={spinnerOn} />
-      <Message message={message} />
+      <Spinner />
+      <Message />
       {loginBusiness.checkLogin() ? <><button id="logout" onClick={logout}>Oturumu kapat</button> </> : ""}
 
       <div id="wrapper" style={{ opacity: spinnerOn ? "0.25" : "1" }}> {/* <-- bu satırı değiştirmeyin */}
@@ -161,8 +176,8 @@ const { message, articles, currentArticleId, spinnerOn, token } = useSelector(st
           <Route path="/" element={<LoginForm login={login} />} />
           <Route path="articles" element={
             <>
-              <ArticleForm postArticle={postArticle} updateArticle={updateArticle} setCurrentArticleId={setCurrentArticleId} currentArticle={articles.find(art => art.article_id == currentArticleId)} currentArticleId = {currentArticleId} />
-              <Articles getArticles={getArticles} articles={articles} deleteArticle={deleteArticle} setCurrentArticleId={setCurrentArticleId} />
+              <ArticleForm postArticle={postArticle} updateArticle={updateArticle} currentArticle={articles.find(art => art.article_id == currentArticleId)} />
+              <Articles getArticles={getArticles} articles={articles} deleteArticle={deleteArticle}/>
             </>
           } />
         </Routes>

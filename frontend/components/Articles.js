@@ -2,10 +2,17 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PT from 'prop-types'
 import { loginBusiness } from '../businesssLayer/loginBusiness'
+import { useSelector, useDispatch } from 'react-redux';
+import { MetaActionFn } from '../reduxThings/actions';
+
+
 
 export default function Articles(props) {
+
+  const { articles } = useSelector(store => store);  
+const dispatch = useDispatch()
   // ✨ proplarım nerede? burada...
-  const {getArticles, articles, deleteArticle, setCurrentArticleId} = props
+  const {getArticles, deleteArticle} = props
   // ✨ koşullu mantık uygula: eğer token yoksa
   // login ekranını render edeceğiz (React Router v.6)
   if(loginBusiness.checkLogin()){
@@ -19,7 +26,8 @@ export default function Articles(props) {
 
   const editButtonHandler = (evt)=> {
     const articleId = evt.target.getAttribute("articleid")
-    setCurrentArticleId(articleId)
+    
+    dispatch(MetaActionFn.setCurrentArticleId(articleId))
   }
   const deleteButtonHandler = (evt)=> {
     const articleId = evt.target.getAttribute("articleid")
@@ -55,14 +63,6 @@ export default function Articles(props) {
 
 // 🔥 Dokunmayın: Makaleler aşağıdaki propları birebir istiyor:
 Articles.propTypes = {
-  articles: PT.arrayOf(PT.shape({ // dizi boş olabilir
-    article_id: PT.number.isRequired,
-    title: PT.string.isRequired,
-    text: PT.string.isRequired,
-    topic: PT.string.isRequired,
-  })).isRequired,
   getArticles: PT.func.isRequired,
-  deleteArticle: PT.func.isRequired,
-  setCurrentArticleId: PT.func.isRequired,
-  currentArticleId: PT.number, // undefined ya da null olabilir
+  deleteArticle: PT.func.isRequired
 }

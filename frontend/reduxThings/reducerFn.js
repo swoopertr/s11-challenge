@@ -1,12 +1,13 @@
 import { MetaActions } from "./actions";
-
+import { LOCAL_STORAGE_TOKEN_KEY } from "../constants/localStorageKey";
+import { localStorageUtil } from "../util/localStorage";
 
 const initialState = {
     message: '',
     articles: [],
     currentArticleId: null,
     spinnerOn: false,
-    token: localStorage.getItem('token') || null,
+    token: localStorageUtil.getFromStorage(LOCAL_STORAGE_TOKEN_KEY) || null,
   };
 
 

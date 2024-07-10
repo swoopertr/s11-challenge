@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import PT from 'prop-types'
+import { useSelector } from 'react-redux';
+
 
 const rotation = keyframes`
   from { transform: rotate(0deg); }
@@ -21,8 +22,9 @@ const StyledSpinner = styled.div`
   }
 `
 
-export default function Spinner({ on }) {
-  if (!on) return null
+export default function Spinner() {
+  const { spinnerOn } = useSelector(store => store);  
+  if (!spinnerOn) return null
   return (
     <StyledSpinner data-testid = "spinner" id="spinner">
       <h3>&nbsp;.</h3>&nbsp;&nbsp;&nbsp;Lütfen bekleyin...
@@ -30,6 +32,4 @@ export default function Spinner({ on }) {
   )
 }
 
-Spinner.propTypes = {
-  on: PT.bool.isRequired,
-}
+

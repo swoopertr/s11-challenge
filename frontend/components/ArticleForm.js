@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import PT from 'prop-types'
 import { topicOptions } from '../constants/topicOptions'
+import { useSelector, useDispatch } from 'react-redux';
+import { MetaActionFn } from '../reduxThings/actions';
+
 
 
 const initialFormValues = { title: '', text: '', topic: '' }
 
 export default function ArticleForm(props) {
+
+  const { currentArticleId } = useSelector(store => store);  
+
+const dispatch = useDispatch()
   const [values, setValues] = useState(initialFormValues)
   // ✨ proplarım nerede? burada... 
-  const {postArticle, updateArticle, setCurrentArticleId, currentArticle, currentArticleId} = props
+  const {postArticle, updateArticle, currentArticle} = props
 
   useEffect(() => {
     // ✨ ekleyin
@@ -41,7 +48,7 @@ export default function ArticleForm(props) {
       await postArticle(values)
     }
     setValues(initialFormValues)
-    setCurrentArticleId(null)
+    dispatch(MetaActionFn.setCurrentArticleId(null))
   }
 
   const isDisabled = () => {
@@ -60,7 +67,7 @@ export default function ArticleForm(props) {
   const cancelEditing = (evt)=> {
     evt.preventDefault()
     setValues(initialFormValues)
-    setCurrentArticleId(null)
+    dispatch(MetaActionFn.setCurrentArticleId(null))
   }
 
   return (
@@ -102,7 +109,6 @@ export default function ArticleForm(props) {
 ArticleForm.propTypes = {
   postArticle: PT.func.isRequired,
   updateArticle: PT.func.isRequired,
-  setCurrentArticleId: PT.func.isRequired,
   currentArticle: PT.shape({ // null ya da undefined olabilir,"oluşturma" modu manasında ("güncelle" nin zıttı olarak)
     article_id: PT.number.isRequired,
     title: PT.string.isRequired,
